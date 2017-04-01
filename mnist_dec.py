@@ -6,8 +6,8 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 # Process MNIST
-mnist_train = (mnist.train.images > 0).reshape(55000, 28*28).astype(np.uint8) * 255
-mnist_test = (mnist.test.images > 0).reshape(10000, 28*28).astype(np.uint8) * 255
+mnist_train = (mnist.train.images > 0).reshape(55000, 28*28).astype(np.uint8)
+mnist_test = (mnist.test.images > 0).reshape(10000, 28*28).astype(np.uint8)
 batch_size = 128
 
 class MNISTModel(object):
@@ -17,7 +17,7 @@ class MNISTModel(object):
     
     def _build_model(self,cluster_num=10):        
         self.X = tf.placeholder(tf.uint8, [None, 28*28])
-        X_input = tf.cast(self.X,tf.float32) / 255.
+        X_input = tf.cast(self.X,tf.float32) / 28*28.
         # CNN model for feature extraction
         #with tf.device('/gpu:0'):
         with tf.variable_scope('feature_extractor'):
@@ -35,7 +35,7 @@ class MNISTModel(object):
             vec_q = calc_q(self.feature,myu)
             self.q = vec_q
             self.p = calc_p(vec_q)
-            self.kl_loss = kl_divergence(self.p,self.p)
+            self.kl_loss = kl_divergence(self.p,self.q)
 # Build the model graph
 graph = tf.get_default_graph()
 with graph.as_default():
